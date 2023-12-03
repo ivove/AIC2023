@@ -11,8 +11,8 @@ Property TestFile As %Stream.FileBinary;
 Method %OnNew(initvalue As %String) As %Status [ Private, ServerOnly = 1 ]
 {
     Set day = ..%ClassName()
-    #DIM filename As %String = "/shared/"_day_".txt" 
-    #DIM testFilename As %String = "/shared/"_day_"t.txt"
+    #DIM filename As %String = "C:\AOC2023\"_day_".txt" 
+    #DIM testFilename As %String = "C:\AOC2023\"_day_"t.txt"
     If (##class(%File).Exists(filename)) {
         Set ..File=##class(%Stream.FileBinary).%New() 
         Set sc=..File.LinkToFile(filename) 
