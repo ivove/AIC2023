@@ -5,8 +5,8 @@ Method Part1() As %Integer
 {
         Set result = 0
         Set y = 1
-        While ('..TestFile.AtEnd){
-            Set line = $TRANSLATE(..TestFile.ReadLine(),$CHAR(13),"")
+        While ('..File.AtEnd){
+            Set line = $TRANSLATE(..File.ReadLine(),$CHAR(13),"")
             Set len = $LENGTH(line)
             Set p="."
             Set num = ""
@@ -22,6 +22,7 @@ Method Part1() As %Integer
                     Set num = ""
                 }
                 Set p = c
+                If num'="" {Set nums(num)=$LISTBUILD(i,y)}
             }
             Set y = y + 1
         }
@@ -40,8 +41,8 @@ Method Part1() As %Integer
                     If ($DATA(map(y,x))) {
                         If ((y=myy) && (x'=fromx) && (x'=tox)) {}
                         Else {
-                            Write num,*9,y,*9,x,*9,map(y,x),!
-                            If ((map(y,x)'=".") && ('(map(y,x)?1N))) { Set fnd = 1}
+                            If num=446 { Write num,*9,y,*9,x,*9,map(y,x),! }
+                            If ((map(y,x)'=".") && ('(map(y,x)?1N))) { Set fnd = 1 }
                         }
                     }
                 }
@@ -50,6 +51,7 @@ Method Part1() As %Integer
                 Set result = result + num 
                 Write "***",num,!
             }
+            ZWrite map(446)
             Set num = $ORDER(nums(num),1,value)
         }
         Return result
