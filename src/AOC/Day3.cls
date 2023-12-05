@@ -18,20 +18,28 @@ Method Part1() As %Integer
                     Set num = num_c
                 }
                 If ('((c?1N)) && (p?1N)){
-                    Set nums(num) = $LISTBUILD(i,y)
+                    Set nums = $GET(nums) + 1
+                    Set nums(nums) = num
+                    Set nums(nums,"x") = $LISTBUILD(i,y)
                     Set num = ""
                 }
                 Set p = c
-                If num'="" {Set nums(num)=$LISTBUILD(i,y)}
+            }
+            If num'="" {
+                Set nums = $GET(nums) + 1
+                Set nums(nums) = num
+                Set nums(nums,"x")=$LISTBUILD(i,y)
             }
             Set y = y + 1
         }
-        Set num = $ORDER(nums(""),1,value)
-        While num'="" {
-            Set len = $LENGTH(num)
+        ZWrite nums
+        Set id = $ORDER(nums(""),1,value)
+        While id'="" {
+            Set len = $LENGTH(value)
             Set fnd = 0
-            Set myx =$LIST(value,1)
-            Set myy = $LIST(value,2)
+            Set coord = nums(id,"x")
+            Set myx =$LIST(coord,1)
+            Set myy = $LIST(coord,2)
             Set fromx = myx-len-1
             Set tox = myx
             Set fromy = myy-1
@@ -41,18 +49,18 @@ Method Part1() As %Integer
                     If ($DATA(map(y,x))) {
                         If ((y=myy) && (x'=fromx) && (x'=tox)) {}
                         Else {
-                            If num=446 { Write num,*9,y,*9,x,*9,map(y,x),! }
+                            If num=360 { Write num,*9,y,*9,x,*9,map(y,x),! }
                             If ((map(y,x)'=".") && ('(map(y,x)?1N))) { Set fnd = 1 }
                         }
                     }
                 }
             }
             If (fnd=1) { 
-                Set result = result + num 
-                Write "***",num,!
+                Set result = result + value 
+                Write "***",value,!
             }
             ZWrite map(446)
-            Set num = $ORDER(nums(num),1,value)
+            Set id = $ORDER(nums(id),1,value)
         }
         Return result
 }
