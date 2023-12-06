@@ -25,11 +25,15 @@ Method Part1() As %Integer
         }
         if (num '= "") {
             set numbers = $GET(numbers) + 1
-            set numbers(numbers) = $LISTBUILD(num,x-$LENGTH(num),y)
+            set numbers(numbers) = $LISTBUILD(num,x-$LENGTH(num)+1,y)
+            if num = 941 {
+                write "*",num,"*",*9,x-$LENGTH(num),!
+            }
         }
         set y = y + 1
     }
 
+    set zz = 0
     for i=1:1:numbers {
         set num = $LIST(numbers(i),1)
         set x = $LIST(numbers(i),2)
@@ -39,10 +43,11 @@ Method Part1() As %Integer
         set toy = y + 1
         set tox = x + $LENGTH(num)
         set add = 0
+        //write "checking: ",i," - ",num,!
         for ty=fromy:1:toy {
             for tx=fromx:1:tox {
                 if $DATA(map(tx,ty)) {
-                    w map(tx,ty)
+                    //w map(tx,ty)
                     set check = 1
                     if (ty = y) {
                         if ((tx'=fromx) && (tx'=tox)) { set check = 0 }
@@ -52,11 +57,22 @@ Method Part1() As %Integer
                     }
                 }
             }
-            w !
+            //w !
         }
         //530595 -> only check symbols -> wrong
         //531491 -> also check numbers -> wrong
-        if add { set result = result + num }
+        if add { 
+            set result = result + num 
+            //write "**is part, adding ",num," to result to obtain ", result,!
+        } else { 
+            //write "--is not part",! 
+        }
+
+        set zz = zz + 1
+        if zz = 10 {
+            //read xx
+            set zz = 0
+        }
     }
 
     Return result
@@ -116,6 +132,110 @@ Method Part1x() As %Integer
             Set num = $ORDER(nums(num),1,value)
         }
         Return result
+}
+
+Method Part2() As %Integer
+{
+    set result = 0
+    set y = 1
+    While ('..File.AtEnd){
+        Set line = $TRANSLATE(..File.ReadLine(),$CHAR(13),"")
+        set len = $LENGTH(line)
+        set p = ""
+        set num = ""
+        for x=1:1:len {
+            set c = $EXTRACT(line,x)
+            
+            set map(x,y) = c
+
+            if (c?1N) { set num = num_c }
+            elseif (p?1N) {
+                set numbers = $GET(numbers) + 1
+                set numbers(numbers) = $LISTBUILD(num,x-$LENGTH(num),y)
+                set num = "" 
+            }
+
+            if (c="*") {
+                set gears = $GET(gears) + 1
+                set gears(gears) = $LISTBUILD(x,y)
+            }
+
+            set p = c
+        }
+        if (num '= "") {
+            set numbers = $GET(numbers) + 1
+            set numbers(numbers) = $LISTBUILD(num,x-$LENGTH(num)+1,y)
+        }
+        set y = y + 1
+    }
+
+    set zz = 0
+    for i=1:1:gears {
+        set x = $LIST(gears(i),1)
+        set y = $LIST(gears(i),2)
+        set fromx = x - 1
+        set fromy = y - 1
+        set toy = y + 1
+        set tox = x + 1
+        set add = 1
+        set fnd = 0
+        kill done
+        //write "checking: ",i," - ",num,!
+        for ty=fromy:1:toy {
+            for tx=fromx:1:tox {
+                if ($DATA(map(tx,ty)) && '$DATA(done(tx,ty))) {
+                    //w map(tx,ty)
+                    if (map(tx,ty)?1N){
+                        set fnd = fnd + 1
+                        set n = map(tx,ty)
+                        set num = n
+                        set xad = -1
+                        if $DATA(map(tx+xad,ty)) {
+                            set n = map(tx+xad,ty)
+                            while n?1N {
+                                set done(tx+xad,ty)=""
+                                set num = n_num
+                                set xad = xad - 1
+                                if $DATA(map(tx+xad,ty)) {
+                                    set n = map(tx+xad,ty)
+                                } else { set n ="" }
+                            }
+                        }
+                        set xad = 1
+                        if $DATA(map(tx+xad,ty)) {
+                            set n = map(tx+xad,ty)
+                            while n?1N {
+                                set done(tx+xad,ty)=""
+                                set num = num_n
+                                set xad = xad + 1
+                                if $DATA(map(tx+xad,ty)) {
+                                    set n = map(tx+xad,ty)
+                                } else { set n ="" }
+                            }
+                        }
+                        set add = add * num
+                    }
+                }
+            }
+            //w !
+        }
+        //530595 -> only check symbols -> wrong
+        //531491 -> also check numbers -> wrong
+        if fnd = 2 { 
+            set result = result + add 
+            //write "**is part, adding ",num," to result to obtain ", result,!
+        } else { 
+            //write "--is not part",! 
+        }
+
+        set zz = zz + 1
+        if zz = 10 {
+            //read xx
+            set zz = 0
+        }
+    }
+
+    Return result
 }
 
 }
