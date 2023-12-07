@@ -62,7 +62,8 @@ Method Part2()
             set type = ..GetType(.cnt)
 
             if ($DATA(cnt("J"))) {
-                if (type = "four") {
+                if (type = "five") { set type = "five" }
+                elseif (type = "four") {
                     set type = "five"
                 }
                 elseif (type = "full") {
@@ -100,7 +101,7 @@ Method Part2()
             }
         }
 
-        zw sorted("high")
+        zw sorted
 
         Return result
 }
