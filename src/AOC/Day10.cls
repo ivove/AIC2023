@@ -84,8 +84,8 @@ Method Part2() As %Integer
     Set result = 0 
     
     Set y = 1
-    While ('..TestFile.AtEnd){
-        Set line = $TRANSLATE(..TestFile.ReadLine(),$CHAR(13),"")
+    While ('..File.AtEnd){
+        Set line = $TRANSLATE(..File.ReadLine(),$CHAR(13),"")
         Set len = $LENGTH(line)
         Set boundx = len
 
@@ -165,21 +165,23 @@ Method Part2() As %Integer
 
         If (map(x,y) = "S") { Set cont = 0}
     }
-    Do ..completeMap(boundx,boundy,.map)
+    Do ..completeMap(boundx,boundy,.map,start)
     Do ..showmap(.map,boundx,boundy)
-    /*
+    
     For x=1:1:boundx {
         For y=1:1:boundy {
             //If ('$DATA(freepoints(x,y)) && '$DATA(trappedpoints(x,y))) {
                 Kill visited
+                Set visited(x,y)=""
                 Set free = ..isfree(x,y,boundx,boundy,"",.visited,.map)
                 If free { Set freepoints(x,y) = map(x,y) }
                 Else { Set trappedpoints(x,y) = map(x,y) }
             //}
         }
     }
-    */
-    Write !,..isfree(6,5,boundx,boundy,"|6x5|",.vis,.map),!,!
+    
+    //Set vis(15,4)=""
+    //Write !,..isfree(15,4,boundx,boundy,"",.vis,.map),!,!
     //Write !,..isfree(4,4,boundx,boundy,"",.vis,.map),!
     //ZWrite vis
     
@@ -187,7 +189,7 @@ Method Part2() As %Integer
     While (x '= "") {
         Set y =$ORDER(trappedpoints(x,""))
         While (y '= "") {
-            If ("-|FL7SJ"'[map(x,y)) {
+            If ('$DATA(pipe(x,y))) {
                 Set result = result + 1
                 Write map(x,y),!
             }
@@ -222,12 +224,13 @@ ClassMethod isfree2(x, y, boundx, boundy, from, visited, map)
     Return free
 }
 
-ClassMethod isfree(x, y, boundx, boundy, from, visited, map)
+ClassMethod isfree(x, y, boundx, boundy, from, visited, map) [ PublicList = nvisited ]
 {
     Set free = 0
-    Set visited(x,y) = $GET(map(x,y),".")
+    //Set visited(x,y) = $GET(map(x,y),".")
     //Write x,*9,y,*9,$GET(map(x,y),"."),*9,from,!
-    If (((x-0.5)<0) || ((x+0.5)>boundx) || ((y-0.5)<0) || ((y+0.5)>boundy)) {
+    //Write x,*9,y,*9,$GET(map(x,y),"."),*9,'$DATA(visited(x,y)),!
+    If (((x-0.5)<1) || ((x+0.5)>boundx) || ((y-0.5)<1) || ((y+0.5)>boundy)) {
         Set free = 1
     }
     Else {
@@ -246,9 +249,10 @@ ClassMethod isfree(x, y, boundx, boundy, from, visited, map)
                 Set nx = x+0.5
             }
             Set tst = "|"_nx_"x"_ny_"|"
-            If (from '[ tst) {
+            If ('$DATA(visited(nx,ny))) {
                 Set n = $GET(map(nx,ny),".")
-                If (".IO"[n) {
+                If ((".IO"[n) && (free = 0)) {
+                    Set visited(x,y)=""
                     Set free = ..isfree(nx,ny,boundx,boundy,from_"|"_nx_"x"_ny_"|",.visited,.map)
                 }
             }
@@ -257,9 +261,33 @@ ClassMethod isfree(x, y, boundx, boundy, from, visited, map)
     Return free
 }
 
-ClassMethod completeMap(boundx, boundy, map)
+ClassMethod completeMap(boundx, boundy, map, start)
 {
-     For x=1:1:boundx {
+    Set sx = $LIST(start,1)
+    Set sy = $LIST(start,2)
+    Set up = $GET(map(sx,sy-1),".")
+    Set down = $GET(map(sx,sy+1),".")
+    Set left = $GET(map(sx-1,sy),".")
+    Set right = $GET(map(sx+1,sy),".")
+    If ("7|F"[up){
+        If ("|LJ" [ down){ Set map(sx,sy) = "|" } 
+        ElseIf ("-7J"[right) { Set map(sx,sy) = "L"}
+        ElseIf ("-FL"[left) { Set map(sx,sy) = "J"}
+    } ElseIf ("|LJ"[down) {
+        If ("|F7" [ up){ Set map(sx,sy) = "|" } 
+        ElseIf ("-7J"[right) { Set map(sx,sy) = "F"}
+        ElseIf ("-FL"[left) { Set map(sx,sy) = "7"}
+    } ElseIf ("-7J"[right) {
+        If ("|F7" [ up){ Set map(sx,sy) = "L" } 
+        ElseIf ("|JL"[down) { Set map(sx,sy) = "F"}
+        ElseIf ("-FL"[left) { Set map(sx,sy) = "-"}
+    }ElseIf ("-7L"[left) {
+        If ("|F7" [ up){ Set map(sx,sy) = "J" } 
+        ElseIf ("|JL"[down) { Set map(sx,sy) = "7"}
+        ElseIf ("-7JL"[right) { Set map(sx,sy) = "-"}
+    }
+
+    For x=1:1:boundx {
         For y=1:1:boundy {
             Set current = map(x,y)
             Set up = $GET(map(x,y-1),".")
