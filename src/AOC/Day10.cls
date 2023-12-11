@@ -166,14 +166,14 @@ Method Part2() As %Integer
         If (map(x,y) = "S") { Set cont = 0}
     }
     Do ..completeMap(boundx,boundy,.map,start)
-    Do ..showmap(.map,boundx,boundy)
+    //Do ..showmap(.map,boundx,boundy)
     
     For x=1:1:boundx {
         For y=1:1:boundy {
             //If ('$DATA(freepoints(x,y)) && '$DATA(trappedpoints(x,y))) {
                 Kill visited
                 Set visited(x,y)=""
-                Set free = ..isfree(x,y,boundx,boundy,"",.visited,.map)
+                Set free = ..isfreeP2(x,y,boundx,boundy,.map)
                 If free { Set freepoints(x,y) = map(x,y) }
                 Else { Set trappedpoints(x,y) = map(x,y) }
             //}
@@ -257,6 +257,47 @@ ClassMethod isfree(x, y, boundx, boundy, from, visited, map) [ PublicList = nvis
                 }
             }
         }
+    }
+    Return free
+}
+
+ClassMethod isfreeP2(x, y, boundx, boundy, map)
+{
+    kill visited
+    kill edge
+    Set free = 0
+    set done = 0
+    set edge(x,y) = ""
+    while ((free = 0) && (done = 0)) {
+        set x = $ORDER(edge(""))
+        while (x '= "") {
+            set y = $ORDER(edge(x,""))
+            while (y '= "") {
+                for dx=-0.5:0.5:0.5 {
+                    for dy=-0.5:0.5:0.5 {
+                        set nx = x+dx
+                        set ny = y+dy
+                        If (((nx)<1) || ((nx)>boundx) || ((ny)<1) || ((ny)>boundy)) {
+                            Set free = 1
+                        }
+                        else {
+                            If ('$DATA(visited(nx,ny))) {
+                                Set n = $GET(map(nx,ny),".")
+                                If ((".IO"[n) && (free = 0)) {
+                                    Set visited(x,y)=""
+                                    set edge(nx,ny)=""
+                                }
+                            }
+                        }
+                    }
+                }
+                set visited(x,y) = ""
+                kill edge(x,y)
+                set y = $ORDER(edge(x,y))
+            }
+            set x = $ORDER(edge(x))
+        }
+        if ('$DATA(edge)) { set done = 1 }
     }
     Return free
 }
