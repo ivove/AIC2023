@@ -126,6 +126,9 @@ Method Part2() As %Integer
         set maxy = $LIST(map(tile),2)
 
         merge xtile = map(tile)
+        
+        set orig = ..FindLine(maxx,maxy,.xtile,0)
+        w tile,*9,orig,!
         set stop = 0
         set x = $ORDER(xtile(""))
         while ((stop = 0) && (x '= "")) {
@@ -135,7 +138,7 @@ Method Part2() As %Integer
                 set n = "#"
                 if (xtile(x,y) = "#") { set n = "." }
                 set ttile(x,y) = n
-                set add = ..FindLine(maxx,maxy,.ttile)
+                set add = ..FindLine(maxx,maxy,.ttile,orig)
                 if (add '= 0) { 
                     set stop = 1 
                     write tile,*9,x,*9,y,*9,add,*9,ttile(x,y),!
@@ -154,7 +157,7 @@ Method Part2() As %Integer
     return result
 }
 
-ClassMethod FindLine(maxx, maxy, tile) As %Integer
+ClassMethod FindLine(maxx, maxy, tile, orig = 0) As %Integer
 {
     set x = 1
     set fnd = 0
@@ -176,6 +179,9 @@ ClassMethod FindLine(maxx, maxy, tile) As %Integer
             set x1 = x1 - 1
             set x2 = x2 + 1
         }
+
+        if (fnd && (orig = (x))) { set fnd = 0 }
+
         set x = x + 1
     }
 
@@ -199,6 +205,7 @@ ClassMethod FindLine(maxx, maxy, tile) As %Integer
                 set y1 = y1 - 1
                 set y2 = y2 + 1
             }
+            if (fnd && (orig = (y * 100))) { set fnd = 0 }
             set y = y + 1
         }
 
