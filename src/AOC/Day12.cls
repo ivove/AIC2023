@@ -76,6 +76,117 @@ Method Part2() As %Integer
     Return result
 }
 
+Method Part2b() As %Integer
+{
+    Set result = 0 
+    
+    Set y = 1
+    set min = 0
+    While ('..File.AtEnd){
+        Set line = $TRANSLATE(..File.ReadLine(),$CHAR(13),"")
+        set map = $PIECE(line," ",1)
+        set format = $PIECE(line," ",2)
+        set xformat = ""
+        set xmap = ""
+        for i=1:1:5{
+            set xformat = xformat_format_","
+            set xmap = xmap_map_"?"
+        }
+        set xformat = $EXTRACT(xformat,1,*-1)
+        set xmap = $EXTRACT(xmap,1,*-1)
+
+        set len = $LENGTH(xmap)
+        set p = $EXTRACT(xmap,1)
+        set current = p
+        kill pieces
+        for x=2:1:len {
+            set c = $EXTRACT(xmap,x)
+            if (c = p) { set current = current_c }
+            else {
+                if p = "?"{
+                    if $LENGTH(current)>min { set min = $LENGTH(current) }
+                }
+                set p = c
+                set pieces = $GET(pieces) + 1
+                set pieces(pieces) = current
+                set current = c
+            }
+        }
+        set pieces = $GET(pieces) + 1
+        set pieces(pieces) = current
+        set springs(y) = $LISTBUILD(xmap,xformat)
+        merge springs(y,"P") = pieces
+        set y = y + 1
+    }
+    set max = y - 1
+    do ..BuildFill(min,.fill)
+
+    for i=1:1:max {
+        w i,"/",max,*9
+        kill mp
+        do ..Map(i,.springs,.fill,"",1,.mp)
+        set result = result + mp
+        w mp,!
+    }
+
+
+    Return result
+}
+
+ClassMethod Map(nr, springs, fills, current, pnr, maps)
+{
+    //w current,!
+    if (pnr>springs(nr,"P")){
+        s f = ..TranslateMap(current)
+        //if $e(current,1,3) = "#.#" { w current,!,f,!,$LIST(springs(nr),2),!,$LIST(springs(nr),1),!,! }
+        if (f = $LIST(springs(nr),2)) { 
+            set maps = $GET(maps) + 1
+            set maps(maps) = current
+            //w current,!
+        }
+    } else {
+        set go = 1
+        if ($EXTRACT(current,*) = "."){
+            s f = ..TranslateMap(current)
+            if (f '= $EXTRACT($LIST(springs(nr),2),1,$LENGTH(f))) { set go = 0 }
+        }
+        if go {
+            set nxt = springs(nr,"P",pnr)
+            if ($EXTRACT(nxt,1) = "?"){
+                set l = $LENGTH(nxt)
+                for i=1:1:fills(l) {
+                    set nc = current_fills(l,i)
+                    //if pnr = 1 w nc,!
+                    do ..Map(nr,.springs,.fills,nc,pnr+1,.maps)
+                }
+            } else {
+                set nc = current_nxt
+                do ..Map(nr,.springs,.fills,nc,pnr+1,.maps)
+            }
+        }
+    }
+}
+
+ClassMethod BuildFill(atl, fill)
+{
+    for i=1:1:atl {
+        kill tmp
+        d ..DoBuildFill(i,"",.tmp)
+        merge fill(i)=tmp
+    }
+}
+
+ClassMethod DoBuildFill(atl, current, fill)
+{
+    if ($LENGTH(current) = atl) { 
+        set fill = $get(fill) + 1
+        set fill(fill) = current
+    } else {
+        do ..DoBuildFill(atl,current_".",.fill)
+        do ..DoBuildFill(atl,current_"#",.fill)
+    }
+}
+
 ClassMethod BuildPos(source, current, position, pos)
 {
     if (position <= $LENGTH(source)) {
