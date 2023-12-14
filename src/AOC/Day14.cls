@@ -180,4 +180,102 @@ ClassMethod ShowMap(maxx, maxy, map)
     write !
 }
 
+Method Part2b(cycles = 1000000000) As %String
+{
+    Set result = 0 
+    set maxx = 0
+    
+    Set y = 1
+    While ('..TestFile.AtEnd){
+        Set line = $TRANSLATE(..TestFile.ReadLine(),$CHAR(13),"")
+        set len = $LENGTH(line)
+        if (len>maxx) { set maxx = len }
+        for x=1:1:len {
+            set c = $EXTRACT(line,x)
+            
+            if (c = "#") {
+                set rock(x,y) = ""
+                set irock(y,x) = ""
+            }
+
+            if (c = "O") {
+                set ball(x,y) = ""
+                set iball(y,x) = ""
+            }
+            set map(y,x) = c
+
+        }
+        set y = y + 1
+    }
+
+    for i=1:1:cycles {
+        for dir = "N","W","S","E" {
+            kill nball,niball
+            if (dir = "N") {
+                set x = $ORDER(ball(""))
+                while x '= "" {
+                    set y = $ORDER(ball(x,""))
+                    while y '= "" {
+                        set ny = $ORDER(irock(y),-1) + 1
+                        set ny2 = $ORDER(niball(y),-1) + 1
+                        if ny < ny2 { set ny = ny2 }
+                        set nball(x,ny) = ""
+                        set niball(ny,x) = ""
+                        set y = $ORDER(ball(x,y))
+                    }
+                    set x = $ORDER(ball(x))
+                }
+            }
+            if (dir = "S") {
+                set x = $ORDER(ball(""))
+                while x '= "" {
+                    set y = $ORDER(ball(x,""))
+                    while y '= "" {
+                        set ny = $ORDER(irock(y)) - 1
+                        set ny2 = $ORDER(niball(y)) - 1
+                        if ny > ny2 { set ny = ny2 }
+                        set nball(x,ny) = ""
+                        set niball(ny,x) = ""
+                        set y = $ORDER(ball(x,y))
+                    }
+                    set x = $ORDER(ball(x))
+                }
+            }
+            if (dir = "E") {
+                set x = $ORDER(ball(""))
+                while x '= "" {
+                    set y = $ORDER(ball(x,""))
+                    while y '= "" {
+                        set nx = $ORDER(rock(x),-1) + 1
+                        set nx2 = $ORDER(nball(x),-1) + 1
+                        if nx < nx2 { set nx = nx2 }
+                        set nball(nx,y) = ""
+                        set niball(y,nx) = ""
+                        set y = $ORDER(ball(x,y))
+                    }
+                    set x = $ORDER(ball(x))
+                }
+            }
+            if (dir = "W") {
+                set x = $ORDER(ball(""))
+                while x '= "" {
+                    set y = $ORDER(ball(x,""))
+                    while y '= "" {
+                        set nx = $ORDER(rock(x)) - 1
+                        set nx2 = $ORDER(nball(x)) - 1
+                        if nx > nx2 { set nx = nx2 }
+                        set nball(nx,y) = ""
+                        set niball(y,nx) = ""
+                        set y = $ORDER(ball(x,y))
+                    }
+                    set x = $ORDER(ball(x))
+                }
+            }
+        }
+
+    }
+
+    set maxy = y - 1
+}
+
 }
