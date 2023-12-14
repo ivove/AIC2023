@@ -197,7 +197,7 @@ Method Part2() As %Integer
         }
         Set x = $ORDER(trappedpoints(x))
     }
-    ZWrite trappedpoints
+    //ZWrite trappedpoints
 
     Return result
 }
