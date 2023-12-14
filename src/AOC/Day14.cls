@@ -4,278 +4,294 @@ Class AOC.Day14 Extends AOC.Base
 Method Part1() As %String
 {
     Set result = 0 
-    set maxx = 0
+    Set maxx = 0
     
     Set y = 1
     While ('..File.AtEnd){
         Set line = $TRANSLATE(..File.ReadLine(),$CHAR(13),"")
-        set len = $LENGTH(line)
-        if (len>maxx) { set maxx = len }
-        for x=1:1:len {
-            set c = $EXTRACT(line,x)
+        Set len = $LENGTH(line)
+        If (len>maxx) { Set maxx = len }
+        For x=1:1:len {
+            Set c = $EXTRACT(line,x)
             //set map(y,x) = c
 
-            set ty = y
-            if (c = "O") {
-                set stop = 0
-                while ((ty > 1) && (stop = 0)) {
-                    if ($get(map(ty-1,x),".") '= "." ) { set stop = 1 }
-                    if (stop = 0 ) { set ty = ty - 1 }
+            Set ty = y
+            If (c = "O") {
+                Set stop = 0
+                While ((ty > 1) && (stop = 0)) {
+                    If ($GET(map(ty-1,x),".") '= "." ) { Set stop = 1 }
+                    If (stop = 0 ) { Set ty = ty - 1 }
                 }
             }
-            set map(ty,x) = c
+            Set map(ty,x) = c
 
         }
-        set y = y + 1
+        Set y = y + 1
     }
     
-    set maxy = y - 1
-    for y=1:1:maxy {
-        for x=1:1:maxx {
-            if $get(map(y,x),".") = "O" {
-                set add = (maxy - (y-1))
+    Set maxy = y - 1
+    For y=1:1:maxy {
+        For x=1:1:maxx {
+            If $GET(map(y,x),".") = "O" {
+                Set add = (maxy - (y-1))
                 //write add,!
-                set result = result + add
+                Set result = result + add
             }
             //write $get(map(y,x),".")
         }
         //write !
     }
 
-    return result
+    Return result
 }
 
 Method Part2(cycles = 1000000000) As %String
 {
     Set result = 0 
-    set maxx = 0
+    Set maxx = 0
     
     Set y = 1
     While ('..File.AtEnd){
         Set line = $TRANSLATE(..File.ReadLine(),$CHAR(13),"")
-        set len = $LENGTH(line)
-        if (len>maxx) { set maxx = len }
-        for x=1:1:len {
-            set c = $EXTRACT(line,x)
+        Set len = $LENGTH(line)
+        If (len>maxx) { Set maxx = len }
+        For x=1:1:len {
+            Set c = $EXTRACT(line,x)
             
-            set map(y,x) = c
+            Set map(y,x) = c
 
         }
-        set y = y + 1
+        Set y = y + 1
     }
 
-    set maxy = y - 1
+    Set maxy = y - 1
 
     //d ..ShowMap(maxx,maxy,.map)
 
-    for i=1:1:cycles {
-        for dir = "N","W","S","E" {
-            kill nmap
-            if (dir = "N")
+    For i=1:1:cycles {
+        For dir = "N","W","S","E" {
+            Kill nmap
+            If (dir = "N")
             {
-                for y=1:1:maxy {
-                    for x=1:1:maxx {
-                        set c = $GET(map(y,x),".")
+                For y=1:1:maxy {
+                    For x=1:1:maxx {
+                        Set c = $GET(map(y,x),".")
 
-                        set ty = y
-                        if (c = "O") {
-                            set stop = 0
-                            while ((ty > 1) && (stop = 0)) {
-                                if ($get(nmap(ty-1,x),".") '= "." ) { set stop = 1 }
-                                if (stop = 0 ) { set ty = ty - 1 }
+                        Set ty = y
+                        If (c = "O") {
+                            Set stop = 0
+                            While ((ty > 1) && (stop = 0)) {
+                                If ($GET(nmap(ty-1,x),".") '= "." ) { Set stop = 1 }
+                                If (stop = 0 ) { Set ty = ty - 1 }
                             }
                         }
-                        set nmap(ty,x) = c
+                        Set nmap(ty,x) = c
 
                     }
                 }
-                kill map
-                merge map = nmap
+                Kill map
+                Merge map = nmap
             }
-            if (dir = "E") {
-                for x=maxx:-1:1 {
-                    for y=1:1:maxy {
-                        set c = $GET(map(y,x),".")
+            If (dir = "E") {
+                For x=maxx:-1:1 {
+                    For y=1:1:maxy {
+                        Set c = $GET(map(y,x),".")
 
-                        set tx = x
-                        if (c = "O") {
-                            set stop = 0
-                            while ((tx < maxx) && (stop = 0)) {
-                                if ($get(nmap(y,tx+1),".") '= "." ) { set stop = 1 }
-                                if (stop = 0 ) { set tx = tx + 1 }
+                        Set tx = x
+                        If (c = "O") {
+                            Set stop = 0
+                            While ((tx < maxx) && (stop = 0)) {
+                                If ($GET(nmap(y,tx+1),".") '= "." ) { Set stop = 1 }
+                                If (stop = 0 ) { Set tx = tx + 1 }
                             }
                         }
-                        set nmap(y,tx) = c
+                        Set nmap(y,tx) = c
                     }
                 }
-                kill map
-                merge map = nmap
+                Kill map
+                Merge map = nmap
             }
-            if (dir = "S")
+            If (dir = "S")
             {
-                for y=maxy:-1:1 {
-                    for x=1:1:maxx {
-                        set c = $GET(map(y,x),".")
+                For y=maxy:-1:1 {
+                    For x=1:1:maxx {
+                        Set c = $GET(map(y,x),".")
 
-                        set ty = y
-                        if (c = "O") {
-                            set stop = 0
-                            while ((ty < maxy) && (stop = 0)) {
-                                if ($get(nmap(ty+1,x),".") '= "." ) { set stop = 1 }
-                                if (stop = 0 ) { set ty = ty + 1 }
+                        Set ty = y
+                        If (c = "O") {
+                            Set stop = 0
+                            While ((ty < maxy) && (stop = 0)) {
+                                If ($GET(nmap(ty+1,x),".") '= "." ) { Set stop = 1 }
+                                If (stop = 0 ) { Set ty = ty + 1 }
                             }
                         }
-                        set nmap(ty,x) = c
+                        Set nmap(ty,x) = c
 
                     }
                 }
-                kill map
-                merge map = nmap
+                Kill map
+                Merge map = nmap
             }
-            if (dir = "W") {
-                for x=1:1:maxx {
-                    for y=1:1:maxy {
-                        set c = $GET(map(y,x),".")
+            If (dir = "W") {
+                For x=1:1:maxx {
+                    For y=1:1:maxy {
+                        Set c = $GET(map(y,x),".")
 
-                        set tx = x
-                        if (c = "O") {
-                            set stop = 0
-                            while ((tx > 1) && (stop = 0)) {
-                                if ($get(nmap(y,tx-1),".") '= "." ) { set stop = 1 }
-                                if (stop = 0 ) { set tx = tx - 1 }
+                        Set tx = x
+                        If (c = "O") {
+                            Set stop = 0
+                            While ((tx > 1) && (stop = 0)) {
+                                If ($GET(nmap(y,tx-1),".") '= "." ) { Set stop = 1 }
+                                If (stop = 0 ) { Set tx = tx - 1 }
                             }
                         }
-                        set nmap(y,tx) = c
+                        Set nmap(y,tx) = c
                     }
                 }
-                kill map
-                merge map = nmap
+                Kill map
+                Merge map = nmap
             }
             //do ..ShowMap(maxx,maxy,.map)
         }
     }
     
-    for y=1:1:maxy {
-        for x=1:1:maxx {
-            if $get(map(y,x),".") = "O" {
-                set add = (maxy - (y-1))
-                set result = result + add
+    For y=1:1:maxy {
+        For x=1:1:maxx {
+            If $GET(map(y,x),".") = "O" {
+                Set add = (maxy - (y-1))
+                Set result = result + add
             }            
             //write $get(map(y,x),".")
         }
         //write !
     }
 
-    return result
+    Return result
 }
 
 ClassMethod ShowMap(maxx, maxy, map)
 {
-    for y=1:1:maxy {
-        for x=1:1:maxx {
-            write $get(map(y,x),".")
+    For y=1:1:maxy {
+        For x=1:1:maxx {
+            Write $GET(map(y,x),".")
         }
-        write !
+        Write !
     }
-    write !
+    Write !
 }
 
 Method Part2b(cycles = 1000000000) As %String
 {
     Set result = 0 
-    set maxx = 0
+    Set maxx = 0
     
     Set y = 1
-    While ('..TestFile.AtEnd){
-        Set line = $TRANSLATE(..TestFile.ReadLine(),$CHAR(13),"")
-        set len = $LENGTH(line)
-        if (len>maxx) { set maxx = len }
-        for x=1:1:len {
-            set c = $EXTRACT(line,x)
+    While ('..File.AtEnd){
+        Set line = $TRANSLATE(..File.ReadLine(),$CHAR(13),"")
+        Set len = $LENGTH(line)
+        If (len>maxx) { Set maxx = len }
+        For x=1:1:len {
+            Set c = $EXTRACT(line,x)
             
-            if (c = "#") {
-                set rock(x,y) = ""
-                set irock(y,x) = ""
+            If (c = "#") {
+                Set rock(x,y) = ""
+                Set irock(y,x) = ""
             }
 
-            if (c = "O") {
-                set ball(x,y) = ""
-                set iball(y,x) = ""
+            If (c = "O") {
+                Set ball(x,y) = ""
+                Set iball(y,x) = ""
             }
-            set map(y,x) = c
+            Set map(y,x) = c
 
         }
-        set y = y + 1
+        Set y = y + 1
     }
+    
+    Set maxy = y - 1
 
-    for i=1:1:cycles {
-        for dir = "N","W","S","E" {
-            kill nball,niball
-            if (dir = "N") {
-                set x = $ORDER(ball(""))
-                while x '= "" {
-                    set y = $ORDER(ball(x,""))
-                    while y '= "" {
-                        set ny = $ORDER(irock(y),-1) + 1
-                        set ny2 = $ORDER(niball(y),-1) + 1
-                        if ny < ny2 { set ny = ny2 }
-                        set nball(x,ny) = ""
-                        set niball(ny,x) = ""
-                        set y = $ORDER(ball(x,y))
+    For i=1:1:cycles {
+        For dir = "N","W","S","E" {
+            Kill nball,niball
+            If (dir = "N") {
+                Set x = $ORDER(ball(""))
+                While x '= "" {
+                    Set y = $ORDER(ball(x,""))
+                    While y '= "" {
+                        Set ny = $ORDER(irock(y),-1) + 1
+                        Set ny2 = $ORDER(niball(y),-1) + 1
+                        If ny < ny2 { Set ny = ny2 }
+                        Set nball(x,ny) = ""
+                        Set niball(ny,x) = ""
+                        Set y = $ORDER(ball(x,y))
                     }
-                    set x = $ORDER(ball(x))
+                    Set x = $ORDER(ball(x))
                 }
             }
-            if (dir = "S") {
-                set x = $ORDER(ball(""))
-                while x '= "" {
-                    set y = $ORDER(ball(x,""))
-                    while y '= "" {
-                        set ny = $ORDER(irock(y)) - 1
-                        set ny2 = $ORDER(niball(y)) - 1
-                        if ny > ny2 { set ny = ny2 }
-                        set nball(x,ny) = ""
-                        set niball(ny,x) = ""
-                        set y = $ORDER(ball(x,y))
+            If (dir = "S") {
+                Set x = $ORDER(ball(""))
+                While x '= "" {
+                    Set y = $ORDER(ball(x,""))
+                    While y '= "" {
+                        Set ny = $ORDER(irock(y)) - 1
+                        Set ny2 = $ORDER(niball(y)) - 1
+                        If ny > ny2 { Set ny = ny2 }
+                        Set nball(x,ny) = ""
+                        Set niball(ny,x) = ""
+                        Set y = $ORDER(ball(x,y))
                     }
-                    set x = $ORDER(ball(x))
+                    Set x = $ORDER(ball(x))
                 }
             }
-            if (dir = "E") {
-                set x = $ORDER(ball(""))
-                while x '= "" {
-                    set y = $ORDER(ball(x,""))
-                    while y '= "" {
-                        set nx = $ORDER(rock(x),-1) + 1
-                        set nx2 = $ORDER(nball(x),-1) + 1
-                        if nx < nx2 { set nx = nx2 }
-                        set nball(nx,y) = ""
-                        set niball(y,nx) = ""
-                        set y = $ORDER(ball(x,y))
+            If (dir = "E") {
+                Set x = $ORDER(ball(""))
+                While x '= "" {
+                    Set y = $ORDER(ball(x,""))
+                    While y '= "" {
+                        Set nx = $ORDER(rock(x),-1) + 1
+                        Set nx2 = $ORDER(nball(x),-1) + 1
+                        If nx < nx2 { Set nx = nx2 }
+                        Set nball(nx,y) = ""
+                        Set niball(y,nx) = ""
+                        Set y = $ORDER(ball(x,y))
                     }
-                    set x = $ORDER(ball(x))
+                    Set x = $ORDER(ball(x))
                 }
             }
-            if (dir = "W") {
-                set x = $ORDER(ball(""))
-                while x '= "" {
-                    set y = $ORDER(ball(x,""))
-                    while y '= "" {
-                        set nx = $ORDER(rock(x)) - 1
-                        set nx2 = $ORDER(nball(x)) - 1
-                        if nx > nx2 { set nx = nx2 }
-                        set nball(nx,y) = ""
-                        set niball(y,nx) = ""
-                        set y = $ORDER(ball(x,y))
+            If (dir = "W") {
+                Set x = $ORDER(ball(""))
+                While x '= "" {
+                    Set y = $ORDER(ball(x,""))
+                    While y '= "" {
+                        Set nx = $ORDER(rock(x)) - 1
+                        Set nx2 = $ORDER(nball(x)) - 1
+                        If nx > nx2 { Set nx = nx2 }
+                        Set nball(nx,y) = ""
+                        Set niball(y,nx) = ""
+                        Set y = $ORDER(ball(x,y))
                     }
-                    set x = $ORDER(ball(x))
+                    Set x = $ORDER(ball(x))
                 }
             }
+            Kill ball,iball
+            Merge ball = nball
+            Merge iball = niball
         }
 
     }
 
-    set maxy = y - 1
+    Set y =$ORDER(iball(""))
+    While y '= "" {
+        Set x = $ORDER(iball(y,""))
+        While x '= "" {
+            Set add = (maxy - (y-1))
+            Set result = result + add
+            Set x = $ORDER(iball(y,x))
+        }
+        Set y = $ORDER(iball(y))
+    }
+    
+    Return result
 }
 
 }
