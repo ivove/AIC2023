@@ -51,8 +51,8 @@ Method Part2(cycles = 1000000000) As %String
     Set maxx = 0
     
     Set y = 1
-    While ('..File.AtEnd){
-        Set line = $TRANSLATE(..File.ReadLine(),$CHAR(13),"")
+    While ('..TestFile.AtEnd){
+        Set line = $TRANSLATE(..TestFile.ReadLine(),$CHAR(13),"")
         Set len = $LENGTH(line)
         If (len>maxx) { Set maxx = len }
         For x=1:1:len {
@@ -65,11 +65,60 @@ Method Part2(cycles = 1000000000) As %String
     }
 
     Set maxy = y - 1
+    m origmap = map
 
     //d ..ShowMap(maxx,maxy,.map)
-
+    set cnt = 0
     For i=1:1:cycles {
-        For dir = "N","W","S","E" {
+        if ((i # 10000) = 0) { w "***",i,!}
+        d ..Rotate(.map,maxx,maxy)
+
+        if ..CompareMaps(.origmap,.map,maxx,maxy) {
+            write i,!
+            set i = cycles
+        }
+        set cnt = cnt + 1
+    }
+
+    set remainder = cycles # cnt
+
+    For i=1:1:remainder {
+        
+        d ..Rotate(.map,maxx,maxy)
+    }
+    
+    For y=1:1:maxy {
+        For x=1:1:maxx {
+            If $GET(map(y,x),".") = "O" {
+                Set add = (maxy - (y-1))
+                Set result = result + add
+            }            
+            //write $get(map(y,x),".")
+        }
+        //write !
+    }
+
+    Return result
+}
+
+ClassMethod CompareMaps(origmap, map, maxx, maxy)
+{
+    set same = 1
+    set y = $ORDER(origmap(""))
+    while ((y '= "") && same){
+        set x = $ORDER(origmap(y,""))
+        while ((x '= "") && same) {
+            if $get(origmap(y,x),".") '= $get(map(y,x),".") { set same = 0 }
+            set x = $ORDER(origmap(y,x))
+        }
+        set y = $ORDER(origmap(y))
+    }
+    Return same
+}
+
+ClassMethod Rotate(map, maxx, maxy)
+{
+    For dir = "N","W","S","E" {
             Kill nmap
             If (dir = "N")
             {
@@ -153,20 +202,6 @@ Method Part2(cycles = 1000000000) As %String
             }
             //do ..ShowMap(maxx,maxy,.map)
         }
-    }
-    
-    For y=1:1:maxy {
-        For x=1:1:maxx {
-            If $GET(map(y,x),".") = "O" {
-                Set add = (maxy - (y-1))
-                Set result = result + add
-            }            
-            //write $get(map(y,x),".")
-        }
-        //write !
-    }
-
-    Return result
 }
 
 ClassMethod ShowMap(maxx, maxy, map)
