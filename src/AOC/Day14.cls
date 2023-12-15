@@ -56,10 +56,8 @@ Method Part2(cycles = 1000000000) As %String
         Set len = $LENGTH(line)
         If (len>maxx) { Set maxx = len }
         For x=1:1:len {
-            Set c = $EXTRACT(line,x)
-            
+            Set c = $EXTRACT(line,x)            
             Set map(y,x) = c
-
         }
         Set y = y + 1
     }
@@ -82,8 +80,7 @@ Method Part2(cycles = 1000000000) As %String
 
     set remainder = cycles # cnt
 
-    For i=1:1:remainder {
-        
+    For i=1:1:remainder {        
         d ..Rotate(.map,maxx,maxy)
     }
     
@@ -119,89 +116,83 @@ ClassMethod CompareMaps(origmap, map, maxx, maxy)
 ClassMethod Rotate(map, maxx, maxy)
 {
     For dir = "N","W","S","E" {
-            Kill nmap
-            If (dir = "N")
-            {
-                For y=1:1:maxy {
-                    For x=1:1:maxx {
-                        Set c = $GET(map(y,x),".")
-
-                        Set ty = y
-                        If (c = "O") {
-                            Set stop = 0
-                            While ((ty > 1) && (stop = 0)) {
-                                If ($GET(nmap(ty-1,x),".") '= "." ) { Set stop = 1 }
-                                If (stop = 0 ) { Set ty = ty - 1 }
-                            }
-                        }
-                        Set nmap(ty,x) = c
-
-                    }
-                }
-                Kill map
-                Merge map = nmap
-            }
-            If (dir = "E") {
-                For x=maxx:-1:1 {
-                    For y=1:1:maxy {
-                        Set c = $GET(map(y,x),".")
-
-                        Set tx = x
-                        If (c = "O") {
-                            Set stop = 0
-                            While ((tx < maxx) && (stop = 0)) {
-                                If ($GET(nmap(y,tx+1),".") '= "." ) { Set stop = 1 }
-                                If (stop = 0 ) { Set tx = tx + 1 }
-                            }
-                        }
-                        Set nmap(y,tx) = c
-                    }
-                }
-                Kill map
-                Merge map = nmap
-            }
-            If (dir = "S")
-            {
-                For y=maxy:-1:1 {
-                    For x=1:1:maxx {
-                        Set c = $GET(map(y,x),".")
-
-                        Set ty = y
-                        If (c = "O") {
-                            Set stop = 0
-                            While ((ty < maxy) && (stop = 0)) {
-                                If ($GET(nmap(ty+1,x),".") '= "." ) { Set stop = 1 }
-                                If (stop = 0 ) { Set ty = ty + 1 }
-                            }
-                        }
-                        Set nmap(ty,x) = c
-
-                    }
-                }
-                Kill map
-                Merge map = nmap
-            }
-            If (dir = "W") {
+        Kill nmap
+        If (dir = "N")
+        {
+            For y=1:1:maxy {
                 For x=1:1:maxx {
-                    For y=1:1:maxy {
-                        Set c = $GET(map(y,x),".")
-
-                        Set tx = x
-                        If (c = "O") {
-                            Set stop = 0
-                            While ((tx > 1) && (stop = 0)) {
-                                If ($GET(nmap(y,tx-1),".") '= "." ) { Set stop = 1 }
-                                If (stop = 0 ) { Set tx = tx - 1 }
-                            }
+                    Set c = $GET(map(y,x),".")
+                    Set ty = y
+                    If (c = "O") {
+                        Set stop = 0
+                        While ((ty > 1) && (stop = 0)) {
+                            If ($GET(nmap(ty-1,x),".") '= "." ) { Set stop = 1 }
+                            If (stop = 0 ) { Set ty = ty - 1 }
                         }
-                        Set nmap(y,tx) = c
                     }
+                    Set nmap(ty,x) = c
                 }
-                Kill map
-                Merge map = nmap
             }
-            //do ..ShowMap(maxx,maxy,.map)
+            Kill map
+            Merge map = nmap
         }
+        If (dir = "E") {
+            For x=maxx:-1:1 {
+                For y=1:1:maxy {
+                    Set c = $GET(map(y,x),".")
+                    Set tx = x
+                    If (c = "O") {
+                        Set stop = 0
+                        While ((tx < maxx) && (stop = 0)) {
+                            If ($GET(nmap(y,tx+1),".") '= "." ) { Set stop = 1 }
+                            If (stop = 0 ) { Set tx = tx + 1 }
+                        }
+                    }
+                    Set nmap(y,tx) = c
+                }
+            }
+            Kill map
+            Merge map = nmap
+        }
+        If (dir = "S")
+        {
+            For y=maxy:-1:1 {
+                For x=1:1:maxx {
+                    Set c = $GET(map(y,x),".")
+                    Set ty = y
+                    If (c = "O") {
+                        Set stop = 0
+                        While ((ty < maxy) && (stop = 0)) {
+                            If ($GET(nmap(ty+1,x),".") '= "." ) { Set stop = 1 }
+                            If (stop = 0 ) { Set ty = ty + 1 }
+                        }
+                    }
+                    Set nmap(ty,x) = c
+                }
+            }
+            Kill map
+            Merge map = nmap
+        }
+        If (dir = "W") {
+            For x=1:1:maxx {
+                For y=1:1:maxy {
+                    Set c = $GET(map(y,x),".")
+                    Set tx = x
+                    If (c = "O") {
+                        Set stop = 0
+                        While ((tx > 1) && (stop = 0)) {
+                            If ($GET(nmap(y,tx-1),".") '= "." ) { Set stop = 1 }
+                            If (stop = 0 ) { Set tx = tx - 1 }
+                        }
+                    }
+                    Set nmap(y,tx) = c
+                }
+            }
+            Kill map
+            Merge map = nmap
+        }
+        
+    }
 }
 
 ClassMethod ShowMap(maxx, maxy, map)
