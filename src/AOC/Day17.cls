@@ -78,13 +78,20 @@ ClassMethod Go(x, y, maxx, maxy, dir, pdir, ppdir, map, path, paths, visisted, c
 
 ClassMethod A(map, maxx, maxy)
 {
+    Set score = 0
     Set open(map(1,1),1_","_1) = ""
     Set stop = 0
     Set s = $ORDER(open(""))
     While (s '= "") && (stop = 0) {
         Set current = $ORDER(open(s,""))
         While (current '= "") && (stop = 0) {
+            Kill open(s,current)
+            Set x = $PIECE(current,",",2)
+            Set y = $PIECE(current,",",1)
             
+
+
+
             Set current = $ORDER(open(s,current))
         }
         Set s = $ORDER(open(s))
