@@ -94,7 +94,9 @@ Method Part2(number) As %Integer
     while x '= "" {
         set y = $ORDER(pos(x,""))
         while y '= "" {
+            if (number#pos(x,y)) {
             set result = result + 1
+            }
             set y = $ORDER(pos(x,y))
         }
         set x = $ORDER(pos(x))
@@ -107,7 +109,7 @@ ClassMethod Steps2(sx, sy, maxx, maxy, number, map, pos)
 {
     kill pos
     set edge(sx,sy) = 0
-    set pos(sx,sy) = 0
+    set pos(sx,sy) = 1
     for i=1:1:number {
         set x = $ORDER(edge(""))
         while x '= "" {
@@ -116,32 +118,32 @@ ClassMethod Steps2(sx, sy, maxx, maxy, number, map, pos)
                 kill edge(x,y)
                 set xx = ..Overflow(x,maxx)
                 set yy = ..Overflow(y,maxy)
-                set xm = ..Overflow(x-1,maxx)
-                set ym = ..Overflow(y-1,maxy)
-                set xp = ..Overflow(x+1,maxx)
-                set yp = ..Overflow(y+1,maxy)
-                if (map(xm,yy) = ".") { 
-                    if '$DATA(pos(x-1,y)) {
+                if '$DATA(pos(x-1,y)) {
+                    set xm = ..Overflow(x-1,maxx)
+                    if (map(xm,yy) = ".") { 
                         set nedge(x-1,y) = i 
-                        set pos(x-1,y) = i 
+                        set pos(x-1,y) = i +1
                     }
                 }
-                if (map(xp,yy) = ".") { 
-                    if '$DATA(pos(x+1,y)) {
+                if '$DATA(pos(x+1,y)) {
+                    set xp = ..Overflow(x+1,maxx)
+                    if (map(xp,yy) = ".") { 
                         set nedge(x+1,y) = i 
-                        set pos(x+1,y) = i 
+                        set pos(x+1,y) = i +1
                     }
                 }
-                if (map(xx,ym) = ".") { 
-                    if '$DATA(pos(x,y-1)) {
+                if '$DATA(pos(x,y-1)) {
+                    set ym = ..Overflow(y-1,maxy)
+                    if (map(xx,ym) = ".") { 
                         set nedge(x,y-1) = i 
-                        set pos(x,y-1) = i 
+                        set pos(x,y-1) = i +1
                     }
                 }
-                if (map(xx,yp) = ".") { 
-                    if '$DATA(pos(x,y+1)) {
+                if '$DATA(pos(x,y+1)) {
+                    set yp = ..Overflow(y+1,maxy)
+                    if (map(xx,yp) = ".") { 
                         set nedge(x,y+1) = i 
-                        set pos(x,y+1) = i 
+                        set pos(x,y+1) = i +1
                     }
                 }
                 set y = $ORDER(edge(x,y))
