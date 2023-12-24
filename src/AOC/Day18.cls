@@ -4,55 +4,116 @@ Class AOC.Day18 Extends AOC.Base
 Method Part1() As %Integer
 {
     Set result = 0 
-    set x = 1
-    set y = 1
-    set maxx = 0
-    set maxy = 0
-    set miny = 999999
-    set minx = 999999
-    set trench(x,y) = "#"
+    Set x = 1
+    Set y = 1
+    Set maxx = 0
+    Set maxy = 0
+    Set miny = 999999
+    Set minx = 999999
+    Set trench(x,y) = "#"
 
     While ('..File.AtEnd){
         Set line = $TRANSLATE(..File.ReadLine(),$CHAR(13),"")
-        set dir = $PIECE(line," ",1)
-        set len = $PIECE(line," " ,2)
+        Set dir = $PIECE(line," ",1)
+        Set len = $PIECE(line," " ,2)
 
-        set dx = 0
-        set dy = 0
-        if (dir = "U") { set dy = -1 }
-        elseif (dir = "D") { set dy = 1 }
-        elseif (dir = "R") { set dx = 1 }
-        elseif (dir = "L") { set dx = -1 }
+        Set dx = 0
+        Set dy = 0
+        If (dir = "U") { Set dy = -1 }
+        ElseIf (dir = "D") { Set dy = 1 }
+        ElseIf (dir = "R") { Set dx = 1 }
+        ElseIf (dir = "L") { Set dx = -1 }
 
-        for i=1:1:len {
-            set x = x + dx
-            set y = y + dy
-            set trench(x,y) = "#"
-            set itrench(y,x) = "#"
+        For i=1:1:len {
+            Set x = x + dx
+            Set y = y + dy
+            Set trench(x,y) = "#"
+            Set itrench(y,x) = "#"
         }
 
-        if (x > maxx) { set maxx = x }
-        if (y > maxy) { set maxy = y }
-        if (y < miny) { set miny = y }
-        if (x < minx) { set minx = x }
+        If (x > maxx) { Set maxx = x }
+        If (y > maxy) { Set maxy = y }
+        If (y < miny) { Set miny = y }
+        If (x < minx) { Set minx = x }
 
     }
 
-    do ..Show(minx,miny,maxx,maxy,.trench)
+    Do ..Show(minx,miny,maxx,maxy,.trench)
     
-    set xx = $ORDER(itrench(miny,""))
-    w minx,*9,xx,!
+    Set xx = $ORDER(itrench(miny,""))
+    Write minx,*9,xx,!
 
-    do ..Dig(xx+1,miny+1,.trench)
+    Do ..Dig(xx+1,miny+1,.trench)
 
-    w !,!
-    h 1
-    do ..Show(minx,miny,maxx,maxy,.trench)
+    Write !,!
+    Hang 1
+    Do ..Show(minx,miny,maxx,maxy,.trench)
 
-    for x=minx:1:maxx {
-        for y=miny:1:maxy {
-            if ($get(trench(x,y),".") = "#" ) {
-                set result = result + 1
+    For x=minx:1:maxx {
+        For y=miny:1:maxy {
+            If ($GET(trench(x,y),".") = "#" ) {
+                Set result = result + 1
+            }
+        }
+    }
+
+    Return result
+}
+
+Method Part2() As %Integer
+{
+    Set result = 0 
+    Set x = 1
+    Set y = 1
+    Set maxx = 0
+    Set maxy = 0
+    Set miny = 999999
+    Set minx = 999999
+    Set ^||trench(x,y) = "#"
+
+    While ('..File.AtEnd){
+        Set line = $TRANSLATE(..File.ReadLine(),$CHAR(13),"")
+        
+        Set len = $EXTRACT($PIECE(line," " ,3),3,*-1)
+        Set dir = $EXTRACT(len,*)
+        Set len = $SYSTEM.Util.HexToDecimal($EXTRACT(len,1,*-1))
+        
+        Set dx = 0
+        Set dy = 0
+        If (dir = "3") { Set dy = -1 }
+        ElseIf (dir = "1") { Set dy = 1 }
+        ElseIf (dir = "0") { Set dx = 1 }
+        ElseIf (dir = "2") { Set dx = -1 }
+
+        For i=1:1:len {
+            Set x = x + dx
+            Set y = y + dy
+            Set ^||trench(x,y) = "#"
+            Set itrench(y,x) = "#"
+        }
+
+        If (x > maxx) { Set maxx = x }
+        If (y > maxy) { Set maxy = y }
+        If (y < miny) { Set miny = y }
+        If (x < minx) { Set minx = x }
+
+    }
+    Write minx,*9,maxx,*9,miny,*9,maxy,!
+    //Do ..Show(minx,miny,maxx,maxy,.trench)
+    
+    Set xx = $ORDER(itrench(miny,""))
+    Write minx,*9,xx,!
+
+    Do ..Dig(xx+1,miny+1,.trench)
+
+    //Write !,!
+    //Hang 1
+    //Do ..Show(minx,miny,maxx,maxy,.trench)
+
+    For x=minx:1:maxx {
+        For y=miny:1:maxy {
+            If ($GET(^||trench(x,y),".") = "#" ) {
+                Set result = result + 1
             }
         }
     }
@@ -62,83 +123,110 @@ Method Part1() As %Integer
 
 ClassMethod Dig(x, y, map)
 {
-    set edge(x,y) = ""
-    set tx = $ORDER(edge(""))
-    while tx '= "" {
-        set ty = $ORDER(edge(tx,""))
-        while ty '= "" {
-            set map(tx,ty) = "#"
-            set visited(tx,ty) = ""
-            for dx=-1:1:1{
-                for dy=-1:1:1 {
-                    if '$d(visited(tx+dx,ty+dy)) {
-                        set edge(tx+dx,ty+dy) = ""
+    Set ^||edge(x,y) = ""
+    While $DATA(^||edge) {
+    Set tx = $ORDER(^||edge(""))
+    While tx '= "" {
+        Set ty = $ORDER(^||edge(tx,""))
+        While ty '= "" {
+            Kill ^||edge(tx,ty)
+            Set map(tx,ty) = "#"
+            Set visited(tx,ty) = ""
+            For dx=-1:1:1{
+                For dy=-1:1:1 {
+                    If $GET(map(tx+dx,ty+dy)) '= "#" {
+                        Set ^||edge(tx+dx,ty+dy) = ""
                     }
                 }
             }
-            kill edge(tx,ty)
-            set ty = $ORDER(edge(tx,ty))
+            Set ty = $ORDER(^||edge(tx,ty))
         }
-        set tx = $ORDER(edge(tx))
+        Set tx = $ORDER(^||edge(tx))
+    }
+    }
+}
+
+ClassMethod Dig2(x, y)
+{
+    Set edge(x,y) = ""
+    While $DATA(edge) {
+    Set tx = $ORDER(edge(""))
+    While tx '= "" {
+        Set ty = $ORDER(edge(tx,""))
+        While ty '= "" {
+            Kill edge(tx,ty)
+            Set ^||trench(tx,ty) = "#"
+            Set visited(tx,ty) = ""
+            For dx=-1:1:1{
+                For dy=-1:1:1 {
+                    If $GET(^||trench(tx+dx,ty+dy)) '= "#" {
+                        Set edge(tx+dx,ty+dy) = ""
+                    }
+                }
+            }
+            Set ty = $ORDER(edge(tx,ty))
+        }
+        Set tx = $ORDER(edge(tx))
+    }
     }
 }
 
 ClassMethod Show(minx, miny, maxx, maxy, trench)
 {
-    Set file=##class(%File).%New("c:\AOC2023\out\day18"_$h_".txt")
+    Set file=##class(%File).%New("c:\AOC2023\out\day18"_$HOROLOG_".txt")
     Do file.Open("WSN")
     Do file.WriteLine("This is a line of text")
-    for y=miny:1:maxy {
-        set line = ""
-        for x=minx:1:maxx {
-            if $GET(trench(x,y))'="" {
-                set line = line_$get(trench(x,y),".")
-            } else {
-                set line = line_"."
+    For y=miny:1:maxy {
+        Set line = ""
+        For x=minx:1:maxx {
+            If $GET(trench(x,y))'="" {
+                Set line = line_$GET(trench(x,y),".")
+            } Else {
+                Set line = line_"."
             }
         }
         Do file.WriteLine(line)
     }
-    do file.Close()
+    Do file.Close()
 }
 
 ClassMethod IsFree(x, y, boundx, boundy, map, visited)
 {
-    kill visited
-    kill edge
+    Kill visited
+    Kill edge
     Set free = 0
-    set done = 0
-    set edge(x,y) = ""
-    while ((free = 0) && (done = 0)) {
-        set x = $ORDER(edge(""))
-        while (x '= "") {
-            set y = $ORDER(edge(x,""))
-            while (y '= "") {
-                for dx=-1:1:1 {
-                    for dy=-1:1:1 {
-                        set nx = x+dx
-                        set ny = y+dy
+    Set done = 0
+    Set edge(x,y) = ""
+    While ((free = 0) && (done = 0)) {
+        Set x = $ORDER(edge(""))
+        While (x '= "") {
+            Set y = $ORDER(edge(x,""))
+            While (y '= "") {
+                For dx=-1:1:1 {
+                    For dy=-1:1:1 {
+                        Set nx = x+dx
+                        Set ny = y+dy
                         If (((nx)<1) || ((nx)>boundx) || ((ny)<1) || ((ny)>boundy)) {
                             Set free = 1
                         }
-                        else {
+                        Else {
                             If ('$DATA(visited(nx,ny))) {
                                 Set n = $GET(map(nx,ny),".")
                                 If ((n = ".") && (free = 0)) {
-                                    Set visited(x,y)=$get(map(x,y),".")
-                                    set edge(nx,ny)=""
+                                    Set visited(x,y)=$GET(map(x,y),".")
+                                    Set edge(nx,ny)=""
                                 }
                             }
                         }
                     }
                 }
-                set visited(x,y) = $get(map(x,y),".")
-                kill edge(x,y)
-                set y = $ORDER(edge(x,y))
+                Set visited(x,y) = $GET(map(x,y),".")
+                Kill edge(x,y)
+                Set y = $ORDER(edge(x,y))
             }
-            set x = $ORDER(edge(x))
+            Set x = $ORDER(edge(x))
         }
-        if ('$DATA(edge)) { set done = 1 }
+        If ('$DATA(edge)) { Set done = 1 }
     }
     //write boundx,*9,boundy,!
     //zw visited
